@@ -2,15 +2,18 @@
 param (
     #accept pipeline input
     [Parameter(ValueFromPipeline)]
-    [PsObject]$inputObject
+    [PsCustomObject]$UserObject,
+    [Parameter(ValueFromPipelineByPropertyName)]
+    [string]$Name
 )
+# get local group membership for the user object
+
 process {
-    # Add a member to the inputobject pscustomobject
-    
-    $inputObject | Add-Member -MemberType NoteProperty -Name "Test_Property" -Value "Test_Value"
-   
-    $inputObject 
+    $Groups = Get-LocalGroup | Where-Object { $_.Members.Name -contains $Name }
+
+    [PSCustomObject]@{
+        Name   = $Name
+        Groups = $Groups
+    }
+
 }
-
-
-
